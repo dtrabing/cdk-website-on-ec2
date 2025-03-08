@@ -3,31 +3,15 @@ import os
 
 import aws_cdk as cdk
 
-env = cdk.Environment(account="084375588860", region="us-east-1")
-
 from cdk_website_on_ec2.network_stack import NetworkStack
 from cdk_website_on_ec2.server_stack import ServerStack
 
-from cdk_website_on_ec2.cdk_website_on_ec2_stack import CdkWebsiteOnEc2Stack
-
+env = cdk.Environment(account="084375588860", region="us-east-1")
 
 app = cdk.App()
-CdkWebsiteOnEc2Stack(app, "CdkWebsiteOnEc2Stack",
-    # If you don't specify 'env', this stack will be environment-agnostic.
-    # Account/Region-dependent features and context lookups will not work,
-    # but a single synthesized template can be deployed anywhere.
 
-    # Uncomment the next line to specialize this stack for the AWS Account
-    # and Region that are implied by the current CLI configuration.
+network_stack = NetworkStack(app, "NetworkStack", env=env)
 
-    #env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')),
-
-    # Uncomment the next line if you know exactly what Account and Region you
-    # want to deploy the stack to. */
-
-    #env=cdk.Environment(account='123456789012', region='us-east-1'),
-
-    # For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
-    )
+server_stack = ServerStack(app, "ServerStack", vpc=network_stack.vpc, env=env)
 
 app.synth()
